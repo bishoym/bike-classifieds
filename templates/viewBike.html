@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Listing Page</title>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body>
+        <div class = 'pane'>
+                <a href = "#"> <h4><strong>{{bike.name}}</strong></h4></a>
+                <p>{{bike.description}}</p>
+                <p>{{bike.price}}</p>
+                <p><a href = "#">Edit Listing</a></p>
+                <p> <a href = "#">Delete Listing</a> </p>
+        </div>
+    </body>
+</html>

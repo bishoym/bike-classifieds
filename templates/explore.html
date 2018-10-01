@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Wolfgang Marketplace</title>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body>
+        <div class = 'pane'>
+            <h1>Bike Catalog</h1>
+
+            <a href="#" > <h3> Create a new Bike Model </h3> </a>
+
+            {% for m in models %}
+
+            <a href = "#"> <h4><strong>{{m.name}}</strong></h4></a>
+
+            <p><a href = "#">Edit Model</a></p>
+
+            <p> <a href = "#">Delete Model</a> </p>
+
+            {% endfor %}
+
+        </div>
+    </body>
+</html>
