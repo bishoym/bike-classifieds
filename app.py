@@ -42,7 +42,7 @@ def landingPage():
 
 # Show all models
 @app.route('/explore/')
-def showBikes():
+def showModels():
     models = session.query(Model).all()
     return render_template('explore.html', models=models)
 
@@ -50,39 +50,60 @@ def showBikes():
 # Create a new model
 @app.route('/explore/model/new/', methods=['GET', 'POST'])
 def newModel():
-    return render_template('newBike.html')
+    if request.method == 'POST':
+        newModel = Model(name=request.form['name'])
+        session.add(newModel)
+        session.commit()
+        return redirect(url_for('showModels'))
+    else:
+        return render_template('newModel.html')
 
 
 # Edit a model
 @app.route('/explore/model/<string:model_name>/edit/', methods=['GET', 'POST'])
 def editModel(model_name):
     editedModel = session.query(Model).filter_by(name=model_name).one()
-    #edit the model
-    return render_template('editModel.html', model=editedModel)
-    # return ("This page will be for editing the %s model" % model_name)
+    if request.method == 'POST':
+        if request.form['name']:
+            editedModel.name = request.form['name']
+            return redirect(url_for('showModels'))
+    else:
+        return render_template('editModel.html', model=editedModel)
 
 
 # Delete a model
 @app.route('/explore/model/<string:model_name>/delete/', methods=['GET', 'POST'])
 def deleteModel(model_name):
     modelToDelete = session.query(Model).filter_by(name=model_name).one()
-    return render_template('deleteModel.html', model=modelToDelete)
+    if request.method == 'POST':
+        session.delete(modelToDelete)
+        session.commit()
+        return redirect(url_for('showModels'))
+    else:
+        return render_template('deleteModel.html', model=modelToDelete)
 
 
 # Show a model's listings
 @app.route('/explore/model/<string:model_name>/')
-def showModels(model_name):
+def showBikes(model_name):
     model = session.query(Model).filter_by(name=model_name).one()
-    listings = session.query(Bike).all()
-    return render_template('listBikes.html', bikes=listings, model=model)
-    # return ("This page is for showing all listings for bikes of type %s" % model_name)
+    try:
+        listings = session.query(Bike).filter_by(type_id=model.id).all()
+        return render_template('listBikes.html', bikes=listings, model=model)
+    except:
+        return render_template('emptyModel.html', model=model)
 
 
 # Create a new listing
 @app.route('/explore/model/<string:model_name>/new/', methods=['GET', 'POST'])
 def newBike(model_name):
-    return render_template('newBike.html', model=model)
-    # return("This page is for adding a new listing of model type %s" % model_name)
+    # if request.method == 'POST':
+    #     newBike = Model(name=request.form['name'], description=request.form['desc'], price=request.form['price'], )
+    #     session.add(newBike)
+    #     session.commit()
+    #     return redirect(url_for('showBikes'))
+    # else:
+        return render_template('newBike.html')
 
 
 # View a listing
@@ -91,7 +112,6 @@ def thisBike(model_name, listing_name):
     model = session.query(Model).filter_by(name=model_name).one()
     bike = session.query(Bike).filter_by(name=listing_name).one()
     return render_template('viewBike.html', model=model, bike=bike)
-    # return ("This is the listing page for %s of type %s" % (listing_name, model_name))
 
 
 # Edit a listing
@@ -101,7 +121,7 @@ def editBike(model_name, listing_name):
     bike = session.query(Bike).filter_by(name=listing_name).one()
     #actually Edit
     return render_template('editBike.html', model=model, bike=bike)
-    # return("This page is for editing %s of model type %s" % (listing_name, model_name))
+
 
 
 # Delete a listing
@@ -111,7 +131,6 @@ def deleteBike(model_name, listing_name):
     bike = session.query(Bike).filter_by(name=listing_name).one()
     #actually delete
     return render_template('deleteBike.html', model=model, bike=bike)
-    # return("This page is for deleting %s of model type %s" % (listing_name, model_name))
 
 
 if __name__ == '__main__':

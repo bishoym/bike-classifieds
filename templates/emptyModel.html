@@ -6,11 +6,8 @@
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
     </head>
     <body>
-        <a href="#" > <h3> Create a new listing </h3> </a>
-        <div class = 'pane'>
-            {% for b in bikes %}
-                <a href = "#"> <h4><strong>{{b.name}}</strong></h4></a>
-            {% endfor %}
-        </div>
+        <h1>{{model.name}}</h1>
+        <p> Sorry, no listings found here! </p>
+        <a href="#" > <h3> Create a new listing</h3> </a>
     </body>
 </html>

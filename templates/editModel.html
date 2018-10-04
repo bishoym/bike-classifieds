@@ -7,11 +7,11 @@
     </head>
     <body>
         <h1> Edit Model  {{model.name}}</h1>
-        <form action="#" method = 'post'>
+        <form action="{{url_for('editModel', model_name=model.name)}}" method = 'post'>
         	<p>Name:</p>
-        		<input type ='text' size='30' name='name' placeholder = '$$$'>
+        		<input type ='text' size='30' name='name' placeholder = '{{model.name}}'>
                 <input type='submit' value='Edit'>
-                <a href = '#'> Cancel </a>
+                <a href = '{{url_for('showModels')}}'> Cancel </a>
         </form>
     </body>
 </html>
