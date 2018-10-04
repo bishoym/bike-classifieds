@@ -10,7 +10,7 @@
         <form action="#" method = 'post'>
         <input type='submit', value = 'Delete'>
         </form>
-        <a href = '#'> Cancel </a>
+        <a href = '{{url_for('thisBike', model_name=model.name, listing_name=bike.name)}}'> Cancel </a>
 
     </body>
 </html>

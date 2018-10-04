@@ -9,9 +9,16 @@
         <h1> Edit {{bike.name}}</h1>
         <form action="#" method = 'post'>
             <p>Name:</p>
-                <input type ='text' size='30' name='name' placeholder = '$$$'>
-                <input type='submit' value='Edit'>
-                <a href = '#'> Cancel </a>
+            <input type ='text' size='30' name='name' placeholder = '{{bike.name}}'>
+
+            <p>Description:</p>
+            <input type ='text' size='50' name='desc'>
+
+            <p>Price:</p>
+            <input type ='text' size='30' name='price' placeholder = '{{bike.price}}'>
+
+            <input type='submit' value='Edit'>
+            <a href = '{{url_for('thisBike', model_name=model.name, listing_name=bike.name)}}'> Cancel </a>
         </form>
     </body>
 </html>

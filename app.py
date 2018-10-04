@@ -88,6 +88,7 @@ def deleteModel(model_name):
 def showBikes(model_name):
     model = session.query(Model).filter_by(name=model_name).one()
     try:
+        session.query(Bike).filter_by(type_id=model.id).one()
         listings = session.query(Bike).filter_by(type_id=model.id).all()
         return render_template('listBikes.html', bikes=listings, model=model)
     except:
@@ -97,12 +98,13 @@ def showBikes(model_name):
 # Create a new listing
 @app.route('/explore/model/<string:model_name>/new/', methods=['GET', 'POST'])
 def newBike(model_name):
-    # if request.method == 'POST':
-    #     newBike = Model(name=request.form['name'], description=request.form['desc'], price=request.form['price'], )
-    #     session.add(newBike)
-    #     session.commit()
-    #     return redirect(url_for('showBikes'))
-    # else:
+    if request.method == 'POST':
+        type = session.query(Model).filter_by(name=model_name).one()
+        newBike = Bike(name=request.form['name'], description=request.form['desc'], price=request.form['price'], type_id=type.id)
+        session.add(newBike)
+        session.commit()
+        return redirect(url_for('showBikes', model_name=model_name))
+    else:
         return render_template('newBike.html')
 
 
@@ -118,9 +120,19 @@ def thisBike(model_name, listing_name):
 @app.route('/explore/model/<string:model_name>/<string:listing_name>/edit', methods=['GET', 'POST'])
 def editBike(model_name, listing_name):
     model = session.query(Model).filter_by(name=model_name).one()
-    bike = session.query(Bike).filter_by(name=listing_name).one()
-    #actually Edit
-    return render_template('editBike.html', model=model, bike=bike)
+    editedBike = session.query(Bike).filter_by(name=listing_name).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            editedBike.name = request.form['name']
+        if request.form['desc']:
+            editedBike.description = request.form['desc']
+        if request.form['price']:
+            editedBike.price = request.form['price']
+        session.add(editedBike)
+        session.commit()
+        return redirect(url_for('thisBike', model_name=model_name, listing_name=editedBike.name))
+    else:
+        return render_template('editBike.html', bike=editedBike, model=model)
 
 
 
@@ -128,9 +140,13 @@ def editBike(model_name, listing_name):
 @app.route('/explore/model/<string:model_name>/<string:listing_name>/delete', methods=['GET', 'POST'])
 def deleteBike(model_name, listing_name):
     model = session.query(Model).filter_by(name=model_name).one()
-    bike = session.query(Bike).filter_by(name=listing_name).one()
-    #actually delete
-    return render_template('deleteBike.html', model=model, bike=bike)
+    delBike = session.query(Bike).filter_by(name=listing_name).one()
+    if request.method == 'POST':
+        session.delete(delBike)
+        session.commit()
+        return redirect(url_for('showBikes', model_name=model_name))
+    else:
+        return render_template('deleteBike.html', bike=delBike, model=model)
 
 
 if __name__ == '__main__':

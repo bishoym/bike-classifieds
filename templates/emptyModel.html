@@ -8,6 +8,7 @@
     <body>
         <h1>{{model.name}}</h1>
         <p> Sorry, no listings found here! </p>
-        <a href="#" > <h3> Create a new listing</h3> </a>
+        <a href="{{url_for('newBike', model_name=model.name)}}" > <h3> Create a new listing</h3> </a>
+        <a href = '{{url_for('showModels')}}'>Back </a>
     </body>
 </html>

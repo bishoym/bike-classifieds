@@ -10,6 +10,7 @@
         <form action="{{url_for('editModel', model_name=model.name)}}" method = 'post'>
         	<p>Name:</p>
         		<input type ='text' size='30' name='name' placeholder = '{{model.name}}'>
+            </br>
                 <input type='submit' value='Edit'>
                 <a href = '{{url_for('showModels')}}'> Cancel </a>
         </form>

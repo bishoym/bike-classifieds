@@ -7,11 +7,11 @@
     </head>
     <body>
         <div class = 'pane'>
-                <a href = "#"> <h4><strong>{{bike.name}}</strong></h4></a>
+                <h4><strong>{{bike.name}}</strong></h4>
                 <p>{{bike.description}}</p>
                 <p>{{bike.price}}</p>
-                <p><a href = "#">Edit Listing</a></p>
-                <p> <a href = "#">Delete Listing</a> </p>
+                <p><a href = "{{url_for('editBike', model_name=model.name, listing_name=bike.name)}}">Edit Listing</a></p>
+                <p> <a href = "{{url_for('deleteBike', model_name=model.name, listing_name=bike.name)}}">Delete Listing</a> </p>
         </div>
     </body>
 </html>
