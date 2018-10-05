@@ -9,6 +9,12 @@
         <div class = 'pane'>
             <h1>Bike Catalog</h1>
 
+            {% if 'username' not in login_session %}
+            <a href="{{url_for('LogMeIn')}}"> Login </a>
+            {% else %}
+            <a href="{{url_for('gdisconnect')}}"> Logout </a>
+            {% endif %}
+
             <a href="{{url_for('newModel')}}" > <h3> Create a new Bike Model </h3> </a>
 
             {% for m in models %}

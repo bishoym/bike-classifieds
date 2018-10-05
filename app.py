@@ -33,6 +33,7 @@ session = DBSession()
 #
 # bikes = [{'name': 'Huffy 24', 'id': '1', 'description': 'This is the best Mountain Bike ever!', 'price': '$120', 'type_id': '1', 'user_id': '1'}, {'name': 'Trinx Free 2', 'id': '2', 'description': 'This is the best Hybrid ever!', 'price': '$200', 'type_id': '1', 'user_id': '1'}, {'name': 'Huffy 29', 'id': '3', 'description': 'This is the BIGGEST Mountain Bike ever!', 'price': '$500', 'type_id': '1', 'user_id': '1'}]
 
+
 # Login flow
 @app.route('/login')
 def LogMeIn():
@@ -196,6 +197,8 @@ def showModels():
 # Create a new model
 @app.route('/explore/model/new/', methods=['GET', 'POST'])
 def newModel():
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
         newModel = Model(name=request.form['name'])
         session.add(newModel)
@@ -208,6 +211,8 @@ def newModel():
 # Edit a model
 @app.route('/explore/model/<string:model_name>/edit/', methods=['GET', 'POST'])
 def editModel(model_name):
+    if 'username' not in login_session:
+        return redirect('/login')
     editedModel = session.query(Model).filter_by(name=model_name).one()
     if request.method == 'POST':
         if request.form['name']:
@@ -220,6 +225,8 @@ def editModel(model_name):
 # Delete a model
 @app.route('/explore/model/<string:model_name>/delete/', methods=['GET', 'POST'])
 def deleteModel(model_name):
+    if 'username' not in login_session:
+        return redirect('/login')
     modelToDelete = session.query(Model).filter_by(name=model_name).one()
     if request.method == 'POST':
         session.delete(modelToDelete)
@@ -244,6 +251,8 @@ def showBikes(model_name):
 # Create a new listing
 @app.route('/explore/model/<string:model_name>/new/', methods=['GET', 'POST'])
 def newBike(model_name):
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
         type = session.query(Model).filter_by(name=model_name).one()
         newBike = Bike(name=request.form['name'], description=request.form['desc'], price=request.form['price'], type_id=type.id)
@@ -251,7 +260,7 @@ def newBike(model_name):
         session.commit()
         return redirect(url_for('showBikes', model_name=model_name))
     else:
-        return render_template('newBike.html')
+        return render_template('newBike.html', model_name=model_name)
 
 
 # View a listing
@@ -265,6 +274,8 @@ def thisBike(model_name, listing_name):
 # Edit a listing
 @app.route('/explore/model/<string:model_name>/<string:listing_name>/edit', methods=['GET', 'POST'])
 def editBike(model_name, listing_name):
+    if 'username' not in login_session:
+        return redirect('/login')
     model = session.query(Model).filter_by(name=model_name).one()
     editedBike = session.query(Bike).filter_by(name=listing_name).one()
     if request.method == 'POST':
@@ -284,6 +295,8 @@ def editBike(model_name, listing_name):
 # Delete a listing
 @app.route('/explore/model/<string:model_name>/<string:listing_name>/delete', methods=['GET', 'POST'])
 def deleteBike(model_name, listing_name):
+    if 'username' not in login_session:
+        return redirect('/login')
     model = session.query(Model).filter_by(name=model_name).one()
     delBike = session.query(Bike).filter_by(name=listing_name).one()
     if request.method == 'POST':
