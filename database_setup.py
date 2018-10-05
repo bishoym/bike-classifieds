@@ -60,6 +60,7 @@ class Bike(Base):
            'name'                   : self.name,
            'description'        : self.description,
            'price'                     : self.price,
+           'type_id'                : self.type_id,
        }
 
 engine = create_engine('sqlite:///bikecatalog.db')
