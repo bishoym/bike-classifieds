@@ -191,7 +191,8 @@ def landingPage():
 @app.route('/explore/')
 def showModels():
     models = session.query(Model).all()
-    return render_template('explore.html', models=models)
+    bikes = session.query(Bike).all()
+    return render_template('explore.html', models=models, bikes=bikes)
 
 
 # Create a new model

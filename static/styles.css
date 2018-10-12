@@ -1,7 +1,28 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
+/* Global declarations */
+@import url('https://fonts.googleapis.com/css?family=Montserrat:700');
 body{
     background-color: #F7F7F7;
+    font-family: 'Montserrat', sans-serif;
 }
+a{
+    text-decoration: none;
+}
+h1{
+    font-size: 105px;
+    color: white;
+}
+h2{
+    font-size: 18px;
+    color: #3d3d3d;
+}
+h2:hover{
+    color: #B11F24;
+}
+h3{
+    color: #C4C4C4;
+    font-size: 14px;
+}
+/*  Landing Page */
 .landing{
     background-image:url("bg-image-chill.jpg");
     background-size: cover;
@@ -13,12 +34,6 @@ body{
     margin-left: 20em;
 
 }
-h1{
-    font-family: 'Montserrat', sans-serif;
-    font-size: 105px;
-    color: white;
-
-}
 .logo{
     display: block;
     width: 300px;
@@ -27,17 +42,16 @@ h1{
     margin-bottom: -30px;
 }
 .cta-button{
-    background-color: #B21414;
+    background-color: #B11F24;
     width: 200px;
     border:none;
     border-radius: 32px;
     color: white;
-    font-family: 'Montserrat', sans-serif;
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
     display: block;
-    font-size: 20px;
+    font-size: 18px;
 }
 .cta-button:hover{
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
@@ -54,7 +68,81 @@ h1{
     display: inline-block;
 }
 
-/* Add a hover effect if you want */
 .fa:hover {
-    color: #B21414;
+    color: #B11F24;
+}
+
+/* Home page */
+.grid-container{
+    display: grid;
+    margin: -7px;
+    grid-template-columns: 2fr 8fr;
+    background-color: #F7F7F7;
+    grid-column-gap: 125px;
+}
+
+.sidebar{
+    display: grid;
+    grid-template-rows: 2fr 7.5fr .5fr;
+    background-color: white;
+    height: 100vh;
+}
+.logo-menu img{
+    margin-top: 1.5em;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+.logo-menu{
+    text-align: center;
+    border-bottom: 2px solid #EAEAEA;
+    padding-bottom: 2em;
+}
+.sidebar img{
+    display: block;
+    text-align: center;
+    width: 56px;
+    height: auto;
+}
+.sidebar h1{
+    font-size: 14px;
+    color: #3D3D3D;
+}
+.sidebar-body{
+    display:inline-grid;
+    grid-auto-rows: 35px;
+    grid-template-columns: 2fr 1fr;
+    padding: 2em;
+}
+.navbar-models{
+    color: #3D3D3D;
+    font-size: 18px;
+    align-self: center;
+}
+.sidebar-body div{
+    justify-self: end;
+    align-self: center;
+}
+.sidebar-body h3{
+    grid-column: 1/ 3;
+}
+.sidebar-footer{
+    padding: 2em;
+}
+.sidebar-footer h1{
+    font-size: 14px;
+    color: #3D3D3D;
+}
+.sidebar-footer h1:hover{
+    font-size: 14px;
+    color: #B11F24;
+}
+.crud-icons{
+    display: inline-block;
+    color: #3D3D3D;
+    padding-left: 15px;
+
+}
+.crud-icons:hover{
+    color: #B11F24;
 }

@@ -4,28 +4,27 @@
         <meta charset="utf-8">
         <title>Wolfgang Marketplace</title>
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     </head>
     <body>
-        <div class = 'pane'>
-            <h1>Bike Catalog</h1>
+        <div class = 'grid-container'>
+            {% include "navbar.html" %}
 
-            {% if 'username' not in login_session %}
-            <a href="{{url_for('LogMeIn')}}"> Login </a>
-            {% else %}
-            <a href="{{url_for('gdisconnect')}}"> Logout </a>
-            {% endif %}
+            <div class="home-container">
 
-            <a href="{{url_for('newModel')}}" > <h3> Create a new Bike Model </h3> </a>
+                {% if 'username' not in login_session %}
+                <a href="{{url_for('LogMeIn')}}"> Login </a>
+                {% else %}
+                <a href="{{url_for('gdisconnect')}}"> Logout </a>
+                {% endif %}
 
-            {% for m in models %}
+                <h1>All Bikes</h1>
+                
+                {% for b in bikes %}
+                <a class="card" href = "#"> <h4><strong>{{b.name}}</strong></h4></a>
+                {% endfor %}
 
-            <a href = "{{url_for('showBikes', model_name=m.name)}}"> <h4><strong>{{m.name}}</strong></h4></a>
-
-            <p><a href = "{{url_for('editModel', model_name=m.name)}}">Edit Model</a></p>
-
-            <p> <a href = "{{url_for('deleteModel', model_name=m.name)}}">Delete Model</a> </p>
-
-            {% endfor %}
+            </div>
 
         </div>
     </body>

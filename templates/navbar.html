@@ -1,0 +1,25 @@
+<div class="sidebar">
+
+    <div class="logo-menu">
+        <img src="{{url_for('static', filename='emblem-hq.png')}}" alt="logo">
+        <h1>Wolfgang Bike Catalog</h1>
+    </div>
+
+
+    <div class="sidebar-body">
+        <h3>Categories</h3>
+            {% for m in models %}
+            <a class="navbar-models" href = "{{url_for('showBikes', model_name=m.name)}}"> <h2><strong>{{m.name}}</strong></h2></a>
+            <div>
+                <a  class="crud-icons" href = "{{url_for('editModel', model_name=m.name)}}"><i class="fas fa-edit"></i></a>
+                <a  class="crud-icons" href = "{{url_for('deleteModel', model_name=m.name)}}"><i class="fas fa-trash"></i></a>
+            </div>
+            {% endfor %}
+    </div>
+
+
+    <div class="sidebar-footer">
+        <a class ="home-add" href="{{url_for('newModel')}}" > <h1>	+ Add Model</h1> </a>
+    </div>
+
+</div>
