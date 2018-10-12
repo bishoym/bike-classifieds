@@ -195,6 +195,12 @@ def showModels():
     return render_template('explore.html', models=models, bikes=bikes)
 
 
+# @app.context_processor
+# def id2Model(type_id):
+#     model = session.query(Model).filter_by(id=type_id).one()
+#     return model
+
+
 # Create a new model
 @app.route('/explore/model/new/', methods=['GET', 'POST'])
 def newModel():

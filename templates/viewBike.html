@@ -4,14 +4,34 @@
         <meta charset="utf-8">
         <title>Listing Page</title>
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     </head>
     <body>
-        <div class = 'pane'>
-                <h4><strong>{{bike.name}}</strong></h4>
-                <p>{{bike.description}}</p>
+        <div class="grid-container">
+            {%include "navbar.html"%}
+        </div>
+        <div class="home-container">
+            <div id="logio">
+                {% if 'username' not in login_session %}
+                <a href="{{url_for('LogMeIn')}}"> Login </a>
+                {% else %}
+                <a href="{{url_for('gdisconnect')}}"> Logout </a>
+                {% endif %}
+            </div>
+
+            <div class="home-title">
+                <h1>{{bike.name}}</h1>
+            </div>
+            <div class="">
                 <p>{{bike.price}}</p>
+                <p>{{bike.description}}</p>
+            </div>
+
+            <div class="">
                 <p><a href = "{{url_for('editBike', model_name=model.name, listing_name=bike.name)}}">Edit Listing</a></p>
                 <p> <a href = "{{url_for('deleteBike', model_name=model.name, listing_name=bike.name)}}">Delete Listing</a> </p>
+            </div>
+
         </div>
     </body>
 </html>

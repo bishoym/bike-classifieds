@@ -12,16 +12,29 @@
 
             <div class="home-container">
 
-                {% if 'username' not in login_session %}
-                <a href="{{url_for('LogMeIn')}}"> Login </a>
-                {% else %}
-                <a href="{{url_for('gdisconnect')}}"> Logout </a>
-                {% endif %}
+                <div id="logio">
+                    {% if 'username' not in login_session %}
+                    <a href="{{url_for('LogMeIn')}}"> Login </a>
+                    {% else %}
+                    <a href="{{url_for('gdisconnect')}}"> Logout </a>
+                    {% endif %}
+                </div>
 
-                <h1>All Bikes</h1>
-                
+                <div class="home-title">
+                    <h1>All Bikes</h1>
+                </div>
+
+                <div class="add-listing-home">
+                    <a href = "#"> <h1>	+ Add Bike</h1> </a>
+                </div>
+
                 {% for b in bikes %}
-                <a class="card" href = "#"> <h4><strong>{{b.name}}</strong></h4></a>
+
+                <div  class="card" >
+                    <a href = "#"> <h4><strong>{{b.name}}</strong></h4></a>
+                    <p>{{b.price}}</p>
+                </div>
+                
                 {% endfor %}
 
             </div>

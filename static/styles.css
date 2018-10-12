@@ -72,16 +72,17 @@ h3{
     color: #B11F24;
 }
 
-/* Home page */
+/* Side-navbar */
 .grid-container{
     display: grid;
     margin: -7px;
-    grid-template-columns: 2fr 8fr;
+    grid-template-columns: 1fr 9fr;
     background-color: #F7F7F7;
     grid-column-gap: 125px;
 }
 
 .sidebar{
+    position:fixed;
     display: grid;
     grid-template-rows: 2fr 7.5fr .5fr;
     background-color: white;
@@ -128,13 +129,10 @@ h3{
 }
 .sidebar-footer{
     padding: 2em;
-}
-.sidebar-footer h1{
     font-size: 14px;
     color: #3D3D3D;
 }
 .sidebar-footer h1:hover{
-    font-size: 14px;
     color: #B11F24;
 }
 .crud-icons{
@@ -145,4 +143,36 @@ h3{
 }
 .crud-icons:hover{
     color: #B11F24;
+}
+
+/* Home page */
+.home-container{
+    grid-column-start: 2;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 2em;
+    grid-gap: 10px;
+}
+.home-title{
+    grid-column: 1/3;
+}
+.home-title h1{
+    font-size: 45px;
+    color: #3d3d3d;
+
+}
+.add-listing-home h1{
+    font-size: 14px;
+    color: #3D3D3D;
+}
+.add-listing-home h1:hover{
+    color: #B11F24;
+}
+#logio{
+    grid-column-start: 3;
+}
+.card{
+    background-color: #D4D4D4;
+    border-radius: 10px;
+    padding: 25px;
 }
