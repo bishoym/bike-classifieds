@@ -3,7 +3,14 @@ import random
 import string
 import httplib2
 import json
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import (
+                                    Flask,
+                                    render_template,
+                                    request,
+                                    redirect,
+                                    jsonify,
+                                    url_for,
+                                    flash)
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Model, Bike, User
@@ -16,7 +23,8 @@ from oauth2client.client import FlowExchangeError
 app = Flask(__name__)
 
 APPLICATION_NAME = "Wolfgang Bike Exchange"
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(
+    open('client_secrets.json', 'r').read())['web']['client_id']
 
 # Connect to Database and create database session
 engine = create_engine('sqlite:///bikecatalog.db')
@@ -25,19 +33,13 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# Initial Database
-# model = {'name': 'MTB', 'id': '1', 'user_id': '1'}
-# models = [{'name': 'MTB', 'id': '1', 'user_id': '1'}, {'name':'CX', 'id':'2', 'user_id': '1'},{'name':'Road', 'id':'3', 'user_id': '1'}]
-#
-# bike = {'name': 'Huffy 24', 'id': '1', 'description': 'This is the best Mountain Bike ever!', 'price': '$120', 'type_id': '1', 'user_id': '1'}
-#
-# bikes = [{'name': 'Huffy 24', 'id': '1', 'description': 'This is the best Mountain Bike ever!', 'price': '$120', 'type_id': '1', 'user_id': '1'}, {'name': 'Trinx Free 2', 'id': '2', 'description': 'This is the best Hybrid ever!', 'price': '$200', 'type_id': '1', 'user_id': '1'}, {'name': 'Huffy 29', 'id': '3', 'description': 'This is the BIGGEST Mountain Bike ever!', 'price': '$500', 'type_id': '1', 'user_id': '1'}]
-
 
 # Login flow
 @app.route('/login')
 def LogMeIn():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+    state = ''.join(
+        random.choice(
+            string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
@@ -95,8 +97,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+            json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -121,7 +123,12 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += """
+        " style = "width: 300px;
+                        height: 300px;
+                        border-radius: 150px;
+                        -webkit-border-radius: 150px;
+                        -moz-border-radius: 150px;"> """
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -133,13 +140,16 @@ def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
         print 'Access Token is None'
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(
+            json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     print 'In gdisconnect access token is %s', access_token
     print 'User name is: '
     print login_session['username']
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = (
+        'https://accounts.google.com/o/oauth2/revoke?token=%s' %
+        login_session['access_token'])
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
@@ -150,11 +160,13 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response = make_response(
+            json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(
+            json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -230,7 +242,9 @@ def editModel(model_name):
 
 
 # Delete a model
-@app.route('/explore/model/<string:model_name>/delete/', methods=['GET', 'POST'])
+@app.route(
+    '/explore/model/<string:model_name>/delete/',
+    methods=['GET', 'POST'])
 def deleteModel(model_name):
     if 'username' not in login_session:
         return redirect('/login')
@@ -262,7 +276,11 @@ def newBike(model_name):
         return redirect('/login')
     if request.method == 'POST':
         type = session.query(Model).filter_by(name=model_name).one()
-        newBike = Bike(name=request.form['name'], description=request.form['desc'], price=request.form['price'], type_id=type.id)
+        newBike = Bike(
+            name=request.form['name'],
+            description=request.form['desc'],
+            price=request.form['price'],
+            type_id=type.id)
         session.add(newBike)
         session.commit()
         return redirect(url_for('showBikes', model_name=model_name))
@@ -271,7 +289,9 @@ def newBike(model_name):
 
 
 # View a listing
-@app.route('/explore/model/<string:model_name>/<string:listing_name>/', methods=['GET', 'POST'])
+@app.route(
+    '/explore/model/<string:model_name>/<string:listing_name>/',
+    methods=['GET', 'POST'])
 def thisBike(model_name, listing_name):
     model = session.query(Model).filter_by(name=model_name).one()
     bike = session.query(Bike).filter_by(name=listing_name).one()
@@ -279,7 +299,9 @@ def thisBike(model_name, listing_name):
 
 
 # Edit a listing
-@app.route('/explore/model/<string:model_name>/<string:listing_name>/edit', methods=['GET', 'POST'])
+@app.route(
+    '/explore/model/<string:model_name>/<string:listing_name>/edit',
+    methods=['GET', 'POST'])
 def editBike(model_name, listing_name):
     if 'username' not in login_session:
         return redirect('/login')
@@ -294,13 +316,18 @@ def editBike(model_name, listing_name):
             editedBike.price = request.form['price']
         session.add(editedBike)
         session.commit()
-        return redirect(url_for('thisBike', model_name=model_name, listing_name=editedBike.name))
+        return redirect(
+            url_for('thisBike',
+                    model_name=model_name,
+                    listing_name=editedBike.name))
     else:
         return render_template('editBike.html', bike=editedBike, model=model)
 
 
 # Delete a listing
-@app.route('/explore/model/<string:model_name>/<string:listing_name>/delete', methods=['GET', 'POST'])
+@app.route(
+    '/explore/model/<string:model_name>/<string:listing_name>/delete',
+    methods=['GET', 'POST'])
 def deleteBike(model_name, listing_name):
     if 'username' not in login_session:
         return redirect('/login')
