@@ -26,6 +26,16 @@ APPLICATION_NAME = "Wolfgang Bike Exchange"
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 
+# def login_required(f):
+#     @wraps(f)
+#     def decorated_function(*args, **kwargs):
+#         if 'username' in login_session:
+#             return f(*args, **kwargs)
+#         else:
+#             flash("You are not allowed to access there")
+#             return redirect('/login')
+#     return decorated_function
+
 # Connect to Database and create database session
 engine = create_engine('sqlite:///bikecatalog.db')
 Base.metadata.bind = engine
@@ -41,7 +51,7 @@ def LogMeIn():
         random.choice(
             string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
-    return render_template('login.html', STATE=state)
+    return render_template('login.html', STATE=state, CLIENT_ID=CLIENT_ID)
 
 
 # Gconnect Flow
@@ -214,6 +224,7 @@ def showModels():
 
 
 # Create a new model
+# @login_required
 @app.route('/explore/model/new/', methods=['GET', 'POST'])
 def newModel():
     if 'username' not in login_session:

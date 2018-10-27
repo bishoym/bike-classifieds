@@ -30,7 +30,7 @@ class Model(Base):
     __tablename__ = 'model'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    name = Column(String(250), nullable=False, unique=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -47,7 +47,7 @@ class Bike(Base):
     """Table for individual listings"""
     __tablename__ = 'bike'
 
-    name = Column(String(80), nullable=False)
+    name = Column(String(80), nullable=False, unique=True)
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
     price = Column(String(8))
@@ -66,6 +66,7 @@ class Bike(Base):
            'description': self.description,
            'price': self.price,
            'type_id': self.type_id,
+           'user_id': self.user_id,
            }
 
 
