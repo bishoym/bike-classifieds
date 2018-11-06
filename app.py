@@ -33,8 +33,9 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
 def login_required(f):
-    @wraps (f)
+    @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' in login_session:
             return f(*args, **kwargs)
@@ -42,6 +43,7 @@ def login_required(f):
             flash("You are not allowed to access there")
             return redirect(url_for('LogMeIn'))
     return decorated_function
+
 
 # Login flow
 @app.route('/login')
@@ -132,7 +134,6 @@ def gconnect():
         user_id = createUser(login_session)
     login_session['user_id'] = user_id
 
-
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -156,7 +157,8 @@ def createUser(login_session):
                    'email'], picture=login_session['picture'])
     session.add(newUser)
     session.commit()
-    user = session.query(User).filter_by(email=login_session['email']).one_or_none()
+    user = session.query(User).filter_by(
+        email=login_session['email']).one_or_none()
     return user.id
 
 
@@ -166,11 +168,8 @@ def getUserInfo(user_id):
 
 
 def getUserID(email):
-    try:
         user = session.query(User).filter_by(email=email).one_or_none()
         return user.id
-    except:
-        return None
 
 
 # Disconnect Flow
@@ -251,13 +250,14 @@ def showModels():
 #     return model
 
 
-
 # Create a new model
 @app.route('/explore/model/new/', methods=['GET', 'POST'])
 @login_required
 def newModel():
     if request.method == 'POST':
-        newModel = Model(name=request.form['name'], user_id=login_session['user_id'])
+        newModel = Model(
+            name=request.form['name'],
+            user_id=login_session['user_id'])
         session.add(newModel)
         session.commit()
         return redirect(url_for('showModels'))
@@ -271,7 +271,9 @@ def newModel():
 def editModel(model_name):
     editedModel = session.query(Model).filter_by(name=model_name).one_or_none()
     if editedModel.user_id != login_session['user_id']:
-        return "<script>function alertfunc() {alert('You are not authorized to edit this bike model.');}</script><body onload='alertfunc()'>"
+        return """<script>function alertfunc() {
+            alert('You are not authorized to edit this bike model.');
+            }</script><body onload='alertfunc()'>"""
     if request.method == 'POST':
         if request.form['name']:
             editedModel.name = request.form['name']
@@ -282,13 +284,16 @@ def editModel(model_name):
 
 # Delete a model
 @app.route(
-'/explore/model/<string:model_name>/delete/',
-methods=['GET', 'POST'])
+    '/explore/model/<string:model_name>/delete/',
+    methods=['GET', 'POST'])
 @login_required
 def deleteModel(model_name):
-    modelToDelete = session.query(Model).filter_by(name=model_name).one_or_none()
+    modelToDelete = session.query(Model).filter_by(
+        name=model_name).one_or_none()
     if modelToDelete.user_id != login_session['user_id']:
-        return "<script>function alertfunc() {alert('You are not authorized to delete this bike model.');}</script><body onload='alertfunc()'>"
+        return """<script>function alertfunc() {
+        alert('You are not authorized to delete this bike model.');
+        }</script><body onload='alertfunc()'>"""
     if request.method == 'POST':
         session.delete(modelToDelete)
         session.commit()
@@ -333,21 +338,31 @@ def newBike(model_name):
     '/explore/model/<string:model_name>/<string:listing_name>/',
     methods=['GET', 'POST'])
 def thisBike(model_name, listing_name):
-    model = session.query(Model).filter_by(name=model_name).one_or_none()
-    bike = session.query(Bike).filter_by(name=listing_name).one_or_none()
+    model = session.query(Model).filter_by(
+        name=model_name).one_or_none()
+    bike = session.query(Bike).filter_by(
+        name=listing_name).one_or_none()
+
     return render_template('viewBike.html', model=model, bike=bike)
 
 
 # Edit a listing
 @app.route(
-'/explore/model/<string:model_name>/<string:listing_name>/edit',
-methods=['GET', 'POST'])
+    '/explore/model/<string:model_name>/<string:listing_name>/edit',
+    methods=['GET', 'POST'])
 @login_required
 def editBike(model_name, listing_name):
-    model = session.query(Model).filter_by(name=model_name).one_or_none()
-    editedBike = session.query(Bike).filter_by(name=listing_name).one_or_none()
+    model = session.query(Model).filter_by(
+        name=model_name).one_or_none()
+
+    editedBike = session.query(Bike).filter_by(
+        name=listing_name).one_or_none()
+
     if login_session['user_id'] != editedBike.user_id:
-        return "<script>function alertfunc() {alert('You are not authorized to edit this bike listing.');}</script><body onload='alertfunc()'>"
+        return """<script>function alertfunc() {
+        alert('You are not authorized to edit this bike listing.');
+        }</script><body onload='alertfunc()'>"""
+
     if request.method == 'POST':
         if request.form['name']:
             editedBike.name = request.form['name']
@@ -367,14 +382,21 @@ def editBike(model_name, listing_name):
 
 # Delete a listing
 @app.route(
-'/explore/model/<string:model_name>/<string:listing_name>/delete',
-methods=['GET', 'POST'])
+    '/explore/model/<string:model_name>/<string:listing_name>/delete',
+    methods=['GET', 'POST'])
 @login_required
 def deleteBike(model_name, listing_name):
-    model = session.query(Model).filter_by(name=model_name).one_or_none()
-    delBike = session.query(Bike).filter_by(name=listing_name).one_or_none()
+    model = session.query(Model).filter_by(
+        name=model_name).one_or_none()
+
+    delBike = session.query(Bike).filter_by(
+        name=listing_name).one_or_none()
+
     if login_session['user_id'] != delBike.user_id:
-        return "<script>function alertfunc() {alert('You are not authorized to delete this bike listing.');}</script><body onload='alertfunc()'>"
+        return """<script>function alertfunc() {
+        alert('You are not authorized to delete this bike listing.');
+        }</script><body onload='alertfunc()'>"""
+
     if request.method == 'POST':
         session.delete(delBike)
         session.commit()
