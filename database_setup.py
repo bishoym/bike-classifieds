@@ -32,7 +32,7 @@ class Model(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
+    user = relationship('User')
 
     @property
     def serialize(self):
@@ -54,8 +54,8 @@ class Bike(Base):
     type_id = Column(Integer, ForeignKey('model.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
 
-    model = relationship(Model)
-    user = relationship(User)
+    model = relationship('Model')
+    user = relationship('User')
 
     @property
     def serialize(self):

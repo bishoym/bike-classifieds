@@ -18,7 +18,7 @@ from flask import make_response
 from flask import session as login_session
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
-
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -26,23 +26,22 @@ APPLICATION_NAME = "Wolfgang Bike Exchange"
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 
-# def login_required(f):
-#     @wraps(f)
-#     def decorated_function(*args, **kwargs):
-#         if 'username' in login_session:
-#             return f(*args, **kwargs)
-#         else:
-#             flash("You are not allowed to access there")
-#             return redirect('/login')
-#     return decorated_function
-
 # Connect to Database and create database session
-engine = create_engine('sqlite:///bikecatalog.db')
+engine = create_engine('sqlite:///bikecatalog.db?check_same_thread=false')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+def login_required(f):
+    @wraps (f)
+    def decorated_function(*args, **kwargs):
+        if 'username' in login_session:
+            return f(*args, **kwargs)
+        else:
+            flash("You are not allowed to access there")
+            return redirect(url_for('LogMeIn'))
+    return decorated_function
 
 # Login flow
 @app.route('/login')
@@ -127,6 +126,13 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    # See if User exists, if not make new entry to db
+    user_id = getUserID(data["email"])
+    if not user_id:
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
+
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -142,6 +148,29 @@ def gconnect():
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
+
+
+# User Helper Functions
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one_or_none()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one_or_none()
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one_or_none()
+        return user.id
+    except:
+        return None
 
 
 # Disconnect Flow
@@ -191,7 +220,7 @@ def modelsJSON():
 # JSON endpoint to display all listings of a model
 @app.route('/model/<string:model_name>/JSON')
 def listingsJSON(model_name):
-    model = session.query(Model).filter_by(name=model_name).one()
+    model = session.query(Model).filter_by(name=model_name).one_or_none()
     listings = session.query(Bike).filter_by(type_id=model.id).all()
     return jsonify(bikes=[i.serialize for i in listings])
 
@@ -199,7 +228,7 @@ def listingsJSON(model_name):
 # JSON endpoint for a single listing
 @app.route('/model/<string:model_name>/<string:listing_name>/JSON')
 def bikeJSON(model_name, listing_name):
-    thisBike = session.query(Bike).filter_by(name=listing_name).one()
+    thisBike = session.query(Bike).filter_by(name=listing_name).one_or_none()
     return jsonify(thisBike=thisBike.serialize)
 
 
@@ -216,21 +245,19 @@ def showModels():
     bikes = session.query(Bike).all()
     return render_template('explore.html', models=models, bikes=bikes)
 
-
 # @app.context_processor
 # def id2Model(type_id):
-#     model = session.query(Model).filter_by(id=type_id).one()
+#     model = session.query(Model).filter_by(id=type_id).one_or_none()
 #     return model
 
 
+
 # Create a new model
-# @login_required
 @app.route('/explore/model/new/', methods=['GET', 'POST'])
+@login_required
 def newModel():
-    if 'username' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
-        newModel = Model(name=request.form['name'])
+        newModel = Model(name=request.form['name'], user_id=login_session['user_id'])
         session.add(newModel)
         session.commit()
         return redirect(url_for('showModels'))
@@ -240,10 +267,11 @@ def newModel():
 
 # Edit a model
 @app.route('/explore/model/<string:model_name>/edit/', methods=['GET', 'POST'])
+@login_required
 def editModel(model_name):
-    if 'username' not in login_session:
-        return redirect('/login')
-    editedModel = session.query(Model).filter_by(name=model_name).one()
+    editedModel = session.query(Model).filter_by(name=model_name).one_or_none()
+    if editedModel.user_id != login_session['user_id']:
+        return "<script>function alertfunc() {alert('You are not authorized to edit this bike model.');}</script><body onload='alertfunc()'>"
     if request.method == 'POST':
         if request.form['name']:
             editedModel.name = request.form['name']
@@ -254,16 +282,17 @@ def editModel(model_name):
 
 # Delete a model
 @app.route(
-    '/explore/model/<string:model_name>/delete/',
-    methods=['GET', 'POST'])
+'/explore/model/<string:model_name>/delete/',
+methods=['GET', 'POST'])
+@login_required
 def deleteModel(model_name):
-    if 'username' not in login_session:
-        return redirect('/login')
-    modelToDelete = session.query(Model).filter_by(name=model_name).one()
+    modelToDelete = session.query(Model).filter_by(name=model_name).one_or_none()
+    if modelToDelete.user_id != login_session['user_id']:
+        return "<script>function alertfunc() {alert('You are not authorized to delete this bike model.');}</script><body onload='alertfunc()'>"
     if request.method == 'POST':
         session.delete(modelToDelete)
         session.commit()
-        return redirect(url_for('showModels'))
+        return redirect(url_for('showModels', model_name=model_name))
     else:
         return render_template('deleteModel.html', model=modelToDelete)
 
@@ -271,7 +300,7 @@ def deleteModel(model_name):
 # Show a model's listings
 @app.route('/explore/model/<string:model_name>/')
 def showBikes(model_name):
-    model = session.query(Model).filter_by(name=model_name).one()
+    model = session.query(Model).filter_by(name=model_name).one_or_none()
     check = session.query(Bike).filter_by(type_id=model.id).first()
     if check is None:
         return render_template('emptyModel.html', model=model)
@@ -282,16 +311,16 @@ def showBikes(model_name):
 
 # Create a new listing
 @app.route('/explore/model/<string:model_name>/new/', methods=['GET', 'POST'])
+@login_required
 def newBike(model_name):
-    if 'username' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
-        type = session.query(Model).filter_by(name=model_name).one()
+        type = session.query(Model).filter_by(name=model_name).one_or_none()
         newBike = Bike(
             name=request.form['name'],
             description=request.form['desc'],
             price=request.form['price'],
-            type_id=type.id)
+            type_id=type.id,
+            user_id=login_session['user_id'])
         session.add(newBike)
         session.commit()
         return redirect(url_for('showBikes', model_name=model_name))
@@ -304,20 +333,21 @@ def newBike(model_name):
     '/explore/model/<string:model_name>/<string:listing_name>/',
     methods=['GET', 'POST'])
 def thisBike(model_name, listing_name):
-    model = session.query(Model).filter_by(name=model_name).one()
-    bike = session.query(Bike).filter_by(name=listing_name).one()
+    model = session.query(Model).filter_by(name=model_name).one_or_none()
+    bike = session.query(Bike).filter_by(name=listing_name).one_or_none()
     return render_template('viewBike.html', model=model, bike=bike)
 
 
 # Edit a listing
 @app.route(
-    '/explore/model/<string:model_name>/<string:listing_name>/edit',
-    methods=['GET', 'POST'])
+'/explore/model/<string:model_name>/<string:listing_name>/edit',
+methods=['GET', 'POST'])
+@login_required
 def editBike(model_name, listing_name):
-    if 'username' not in login_session:
-        return redirect('/login')
-    model = session.query(Model).filter_by(name=model_name).one()
-    editedBike = session.query(Bike).filter_by(name=listing_name).one()
+    model = session.query(Model).filter_by(name=model_name).one_or_none()
+    editedBike = session.query(Bike).filter_by(name=listing_name).one_or_none()
+    if login_session['user_id'] != editedBike.user_id:
+        return "<script>function alertfunc() {alert('You are not authorized to edit this bike listing.');}</script><body onload='alertfunc()'>"
     if request.method == 'POST':
         if request.form['name']:
             editedBike.name = request.form['name']
@@ -337,13 +367,14 @@ def editBike(model_name, listing_name):
 
 # Delete a listing
 @app.route(
-    '/explore/model/<string:model_name>/<string:listing_name>/delete',
-    methods=['GET', 'POST'])
+'/explore/model/<string:model_name>/<string:listing_name>/delete',
+methods=['GET', 'POST'])
+@login_required
 def deleteBike(model_name, listing_name):
-    if 'username' not in login_session:
-        return redirect('/login')
-    model = session.query(Model).filter_by(name=model_name).one()
-    delBike = session.query(Bike).filter_by(name=listing_name).one()
+    model = session.query(Model).filter_by(name=model_name).one_or_none()
+    delBike = session.query(Bike).filter_by(name=listing_name).one_or_none()
+    if login_session['user_id'] != delBike.user_id:
+        return "<script>function alertfunc() {alert('You are not authorized to delete this bike listing.');}</script><body onload='alertfunc()'>"
     if request.method == 'POST':
         session.delete(delBike)
         session.commit()
