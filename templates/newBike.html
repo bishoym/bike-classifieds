@@ -10,13 +10,13 @@
 
         <form action="#" method = 'post'>
         	<p>Name:</p>
-        	<input type ='text' size='30' name='name'>
+        	<input type ='text' size='30' name='name' required>
 
             <p>Description:</p>
             <input type ='text' size='50' name='desc'>
 
             <p>Price:</p>
-            <input type ='text' size='30' name='price'>
+            <input type ='number' min="1" step="any" name='price' placeholder="$">
 
         </br>
             <input type='submit' value='Create'>
