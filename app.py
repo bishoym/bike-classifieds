@@ -313,13 +313,14 @@ def deleteModel(model_name):
 # Show a model's listings
 @app.route('/explore/model/<string:model_name>/')
 def showBikes(model_name):
+    models = session.query(Model).all()
     model = session.query(Model).filter_by(name=model_name).one_or_none()
     check = session.query(Bike).filter_by(type_id=model.id).first()
     if check is None:
         return render_template('emptyModel.html', model=model)
     else:
         listings = session.query(Bike).filter_by(type_id=model.id).all()
-        return render_template('listBikes.html', bikes=listings, model=model)
+        return render_template('listBikes.html', bikes=listings, model=model, models=models)
 
 
 # Create a new listing
@@ -346,12 +347,13 @@ def newBike(model_name):
     '/explore/model/<string:model_name>/<string:listing_name>/',
     methods=['GET', 'POST'])
 def thisBike(model_name, listing_name):
+    models = session.query(Model).all()
     model = session.query(Model).filter_by(
         name=model_name).one_or_none()
     bike = session.query(Bike).filter_by(
         name=listing_name).one_or_none()
 
-    return render_template('viewBike.html', model=model, bike=bike)
+    return render_template('viewBike.html', model=model, bike=bike, models=models)
 
 
 # Edit a listing
