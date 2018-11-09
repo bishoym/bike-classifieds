@@ -1,7 +1,8 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy import create_engine
+
 
 Base = declarative_base()
 
@@ -54,7 +55,7 @@ class Bike(Base):
     type_id = Column(Integer, ForeignKey('model.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
 
-    model = relationship('Model')
+    model = relationship('Model', backref=backref("Model", cascade="all, delete-orphan"))
     user = relationship('User')
 
     @property
