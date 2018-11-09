@@ -320,7 +320,8 @@ def showBikes(model_name):
         return render_template('emptyModel.html', model=model)
     else:
         listings = session.query(Bike).filter_by(type_id=model.id).all()
-        return render_template('listBikes.html', bikes=listings, model=model, models=models)
+        return render_template(
+            'listBikes.html', bikes=listings, model=model, models=models)
 
 
 # Create a new listing
@@ -353,7 +354,8 @@ def thisBike(model_name, listing_name):
     bike = session.query(Bike).filter_by(
         name=listing_name).one_or_none()
 
-    return render_template('viewBike.html', model=model, bike=bike, models=models)
+    return render_template(
+        'viewBike.html', model=model, bike=bike, models=models)
 
 
 # Edit a listing
