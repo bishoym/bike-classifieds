@@ -17,10 +17,8 @@ These tables hold information about the users, the bike models on offer, and the
 ## Setup/Installation
 - Once you have vagrant setup on VirtualBox you can use your terminal to start the VM using `vagrant up` _(Note: this will take a while the first time you launch as vagrant is downloading extra dependencies)_
 - Follow that with `vagrant ssh` to log into your VM _(Note: On some Windows systems, you will need to use `winpty vagrant ssh` instead of `vagrant ssh`)_
-
-_(Note: You may check everything is working by using the commands `python` to make sure you have installed both correctly)_
-
-- Run the file using the command `python app.py`
+- Navigate to the repo's directory and run `pip  install  -r requirements.txt`
+- Run the web-app using the command `python app.py`
 
 ## Usage
 This program can easily run from the command line using: `python app.py`
