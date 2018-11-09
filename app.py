@@ -247,8 +247,10 @@ def landingPage():
 def showModels():
     models = session.query(Model).all()
     bikes = session.query(Bike).all()
-    listings = session.query(Bike, Model).outerjoin(Model, Model.id == Bike.type_id).all()
-    return render_template('explore.html', models=models, bikes=bikes, listings=listings)
+    listings = session.query(Bike, Model).outerjoin(
+        Model, Model.id == Bike.type_id).all()
+    return render_template(
+        'explore.html', models=models, bikes=bikes, listings=listings)
 
 # @app.context_processor
 # def id2Model(type_id):

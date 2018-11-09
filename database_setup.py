@@ -55,7 +55,8 @@ class Bike(Base):
     type_id = Column(Integer, ForeignKey('model.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
 
-    model = relationship('Model', backref=backref("Model", cascade="all, delete-orphan"))
+    model = relationship('Model', backref=backref(
+        "Model", cascade="all, delete-orphan"))
     user = relationship('User')
 
     @property
