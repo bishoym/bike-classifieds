@@ -58,6 +58,7 @@ def LogMeIn():
 # Gconnect Flow
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """ Login flow for Google OAuth """
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -168,13 +169,17 @@ def getUserInfo(user_id):
 
 
 def getUserID(email):
+    try:
         user = session.query(User).filter_by(email=email).one_or_none()
         return user.id
+    except noUser:
+        return None
 
 
 # Disconnect Flow
 @app.route('/gdisconnect')
 def gdisconnect():
+    """ Logout flow for Google OAuth """
     access_token = login_session.get('access_token')
     if access_token is None:
         print 'Access Token is None'
@@ -240,9 +245,8 @@ def landingPage():
 # Show all models
 @app.route('/explore/')
 def showModels():
-    models = session.query(Model).all()
-    bikes = session.query(Bike).all()
-    return render_template('explore.html', models=models, bikes=bikes)
+    listings = session.query(Bike, Model).outerjoin(Model, Model.id == Bike.type_id).all()
+    return render_template('explore.html', models=models, bikes=bikes, listings = listings)
 
 # @app.context_processor
 # def id2Model(type_id):

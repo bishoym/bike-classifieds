@@ -28,13 +28,16 @@
                     <a href = "#"> <h1>	+ Add Bike</h1> </a>
                 </div>
 
-                {% for b in bikes %}
+                {% for item in listings %}
 
                 <div  class="card" >
-                    <a href = "#"> <h4><strong>{{b.name}}</strong></h4></a>
-                    <p>{{b.price}}</p>
+                    <a href = "{{url_for('thisBike',
+                    model_name=item[1].name,
+                    listing_name=item[0].name)}}">
+                    <h4><strong>{{item[0].name}}</strong></h4></a>
+                    <p>{{item[0].price}}</p>
                 </div>
-                
+
                 {% endfor %}
 
             </div>
