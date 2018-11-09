@@ -1,3 +1,5 @@
-*.db*db-journal
+*.db
+*.db-journal
 *.pyc
+
 lotsofbikes.py
